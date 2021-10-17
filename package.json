@@ -1,6 +1,6 @@
 {
   "name": "async-walk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "useful directory walker",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "walk",
     "readdir",
     "regexp",
-	"generator",
-	"async"
+    "generator",
+    "async"
   ],
   "author": "luojia@luojia.me",
   "license": "MIT",
