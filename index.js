@@ -54,6 +54,7 @@ async function *walkFilterGenerator(dirPath,filter,options={}){
 	for(let currentDir,depth,dir;dir=toWalk.shift();){//get a dir
 		[currentDir,depth]=dir;
 		tmpDirs=[];
+		if(currentDir===dirPath)currentDir='.';
 		asbPath=Path.resolve(dirPath,currentDir);
 		let infoGen=await readDirGenerator(asbPath,options.withStats?'fileStat':'fileType',options.types);
 		for await(let info of infoGen){
