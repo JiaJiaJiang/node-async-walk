@@ -1,6 +1,6 @@
 {
   "name": "@luojia/async-walk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "useful directory walker",
   "main": "index.js",
   "scripts": {
