@@ -43,7 +43,8 @@ async function *walkFilterGenerator(dirPath,filter,options={}){
 		depth:Infinity,//scan depth
 		exclude:[],//exclude sub-path in posix format
 		types:['File','Directory','BlockDevice','CharacterDevice','FIFO','Socket','SymbolicLink'],//file type filter
-		withStats:false,//include stats object in callback info
+		withStats:false,//include stats object in callback info,
+		onDirectory:dir=>{return true},
 		// followSymbolicLink:true,
 	},options);
 	options.exclude=new Set(options.exclude.map(p=>Path.resolve(dirPath,p)));
@@ -55,6 +56,7 @@ async function *walkFilterGenerator(dirPath,filter,options={}){
 		[currentDir,depth]=dir;
 		tmpDirs=[];
 		if(currentDir===dirPath)currentDir='.';
+		if(!options.onDirectory(currentDir))continue;
 		asbPath=Path.resolve(dirPath,currentDir);
 		let infoGen=await readDirGenerator(asbPath,options.withStats?'fileStat':'fileType',options.types);
 		for await(let info of infoGen){

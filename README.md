@@ -28,6 +28,9 @@ let walkOptions={//these are default values
     
     //use Stats object instead of Dirent object in callback info
     withStats:false,
+    
+    //define a function that will be called on each sub-directory, if not return true, this directory will not be processed. (include the input dir)
+    onDirectory:dir=>{return true},
 }
 ```
 
