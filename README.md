@@ -4,7 +4,7 @@ Useful directory walker
 ## Install
 
 ```bash
-npm i @luojia/async-walk
+npm i async-walk-dir
 ```
 
 ## Parameters
@@ -49,7 +49,7 @@ There are two modes you can use: `callback mode` and `async generator mode`. Wit
 #### async function walkRegExp(path,regexp,callback[,options])
 
 ```javascript
-const {walkRegExp}=require('@luojia/async-walk');
+const {walkRegExp}=require('async-walk-dir');
 
 walkRegExp(__dirname+'/..', /\.js$/, (dir,info)=>{//walk js files
     console.log(info.type, '\t', dir, info.name);
@@ -59,7 +59,7 @@ walkRegExp(__dirname+'/..', /\.js$/, (dir,info)=>{//walk js files
 #### async function* walkRegExpGenerator(path,regexp[,options])
 
 ```javascript
-const {walkRegExpGenerator}=require('@luojia/async-walk');
+const {walkRegExpGenerator}=require('async-walk-dir');
 (async ()=>{
     //get the generator
     let gen=walkRegExpGenerator(__dirname+'/..', /.*/, {//options example
@@ -86,7 +86,7 @@ const {walkRegExpGenerator}=require('@luojia/async-walk');
 #### async function walkFilter(path,filter,callback[,options])
 
 ```javascript
-const {walkFilter}=require('@luojia/async-walk');
+const {walkFilter}=require('async-walk-dir');
 walkFilter(__dirname+'/..', info=>{//filter function
     if(info.size > 2048)return true;//filter file whose size > 2048 Bytes
 }, (dir,info)=>{//callback
@@ -99,7 +99,7 @@ walkFilter(__dirname+'/..', info=>{//filter function
 #### async function* walkFilterGenerator(path,filter[,options])
 
 ```javascript
-const {walkRegExpGenerator}=require('@luojia/async-walk');
+const {walkRegExpGenerator}=require('async-walk-dir');
 (async ()=>{
     //get the generator
     let gen=walkFilterGenerator(__dirname+'/..', info=>{//filter function
@@ -124,7 +124,7 @@ const {walkRegExpGenerator}=require('@luojia/async-walk');
 #### Parallel async callback
 
 ```javascript
-const {walkFilter}=require('@luojia/async-walk');
+const {walkFilter}=require('async-walk-dir');
 
 walkFilter(__dirname+'/..', info=>{
     if(info.size > 2048)return true;//get file which size > 2048 Bytes
