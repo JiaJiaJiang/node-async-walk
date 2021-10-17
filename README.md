@@ -52,7 +52,7 @@ There are two modes you can use: `callback mode` and `async generator mode`. Wit
 const {walkRegExp}=require('async-walk');
 
 walkRegExp(__dirname+'/..', /\.js$/, (dir,info)=>{//walk js files
-    console.log(info.type,'\t',dir,info.name);
+    console.log(info.type, '\t', dir, info.name);
 }, walkOptions);
 ```
 
@@ -71,8 +71,8 @@ const {walkRegExpGenerator}=require('async-walk');
     
     //use 'for await' for async generator and you can break at where you want
     for await(let [dir,info] of gen){
-        console.log(info.type,'\t',dir,info.name);
-        if(info.name==='poi')break;//break when find a file named 'poi'
+        console.log(info.type, '\t', dir, info.name);
+        if(info.name === 'poi')break;//break when find a file named 'poi'
     }
 })();
 ```
@@ -88,9 +88,9 @@ const {walkRegExpGenerator}=require('async-walk');
 ```javascript
 const {walkFilter}=require('async-walk');
 walkFilter(__dirname+'/..', info=>{//filter function
-    if(info.size>2048)return true;//filter file whose size > 2048 Bytes
+    if(info.size > 2048)return true;//filter file whose size > 2048 Bytes
 }, (dir,info)=>{//callback
-    console.log(info.type,'\t',dir,info.name,info.size);
+    console.log(info.type, '\t', dir, info.name, info.size);
 }, {//options
     withStats:true,//use Stats object so we can get file size for filter
 });
@@ -103,14 +103,14 @@ const {walkRegExpGenerator}=require('async-walk');
 (async ()=>{
     //get the generator
     let gen=walkFilterGenerator(__dirname+'/..', info=>{//filter function
-        if(info.size>2048)return true;//filter file whose size > 2048 Bytes
+        if(info.size > 2048)return true;//filter file whose size > 2048 Bytes
     }, {//options example
         withStats:true,//use Stats object so we can get file size for filter
     });
     
     //use 'for await' for async generator and you can break at where you want
     for await(let [dir,info] of gen){
-        console.log(info.type,'\t',dir,info.name);
+        console.log(info.type,'\t', dir, info.name);
     }
 })();
 ```
@@ -127,11 +127,11 @@ const {walkRegExpGenerator}=require('async-walk');
 const {walkFilter}=require('async-walk');
 
 walkFilter(__dirname+'/..', info=>{
-    if(info.size>2048)return true;//get file which size > 2048 Bytes
+    if(info.size > 2048)return true;//get file which size > 2048 Bytes
 },async (dir,info)=>{
     return new Promise((ok,fail)=>{
         setTimeout(()=>{//set a random timout,in parallel mode the log will print in random order
-            console.log(info.type,'\t',dir,info.name,info.size);
+            console.log(info.type, '\t', dir, info.name, info.size);
             ok();
         },5000*Math.random());
     })
