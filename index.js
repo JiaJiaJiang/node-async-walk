@@ -77,7 +77,7 @@ async function *walkFilterGenerator(dirPath,filter,options={}){
 				}
 				if(!hit)continue;
 			}
-			if(filter(info)){
+			if(filter(info,currentDir)){
 				yield [currentDir,info];
 			}
 		}

@@ -31,12 +31,18 @@ let walkOptions={//these are default values
 }
 ```
 
-#### callback(subDir,info)
+#### callback(subDir, info)
 
 * subDir : Path relative to given directory path. This is the path of sub directory where the file in, not including file name.
 * info : If `walkOptions.withStats` is true, this will be a [Stats object](https://nodejs.org/api/fs.html#fs_class_fs_stats), otherwise this will be a [Dirent Object](https://nodejs.org/api/fs.html#fs_class_fs_dirent). Additional properties are:
   * name : File name.
   * type : Type of this file, the same as which in `walkOptions.types`.
+
+#### filter(info, subDir)
+
+Parameters are the same as callback's.
+
+
 
 ## Usage
 
