@@ -1,6 +1,6 @@
 {
   "name": "async-walk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "useful directory walker",
   "main": "index.js",
   "scripts": {
