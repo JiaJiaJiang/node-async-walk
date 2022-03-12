@@ -1,4 +1,5 @@
 const {walkFilter}=require('../index.js');
+console.log('get file which size > 2048 Bytes');
 walkFilter(__dirname+'/..',info=>{
 	if(info.size>2048)return true;//get file which size > 2048 Bytes
 },(dir,info)=>{

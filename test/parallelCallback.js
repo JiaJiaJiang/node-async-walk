@@ -1,4 +1,6 @@
 const {walkFilter}=require('../index.js');
+console.log('get file which size > 2048 Bytes in parallel with a random timeout');
+console.log('this list should be in different order for each run');
 
 walkFilter(__dirname+'/..',info=>{
 	if(info.size>2048)return true;//get file which size > 2048 Bytes

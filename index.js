@@ -1,6 +1,14 @@
 const fsP=require('fs').promises;
 const Path=require('path');
 
+/**
+ *generator for reading dir
+ *
+ * @param {string} path
+ * @param {'fileStat'|'fileType'} [infoType='']
+ * @yields {Dirent|Stat}  
+ * @returns {*}  
+ */
 async function *readDirGenerator(path,infoType=''){
 	let itemList=await fsP.readdir(path,{withFileTypes:infoType!=='fileStat'});
 	if(infoType==='fileType'){//return dirent list
@@ -110,17 +118,17 @@ async function generatorWrapper(gen,callback,options){
 	options=Object.assign({
 		asyncCallbackInParallel:false,//call async callback function in parallel (not wait them before the walker ends)
 	},options);
-	const callbackTasks=[];//callback tasks
 	if(options.asyncCallbackInParallel){
+		const callbackTasks=[];//callback tasks
 		for await(let [dir,info] of gen){
 			callbackTasks.push(callback(dir,info));
 		}
+		if(callbackTasks.length)await Promise.all(callbackTasks);
 	}else{
 		for await(let [dir,info] of gen){
 			await callback(dir,info);
 		}
 	}
-	if(callbackTasks.length)await Promise.all(callbackTasks);
 }
 
 /**
