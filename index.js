@@ -42,10 +42,16 @@ async function *readDirGenerator(path,infoType=''){
  *async generator for walk directory by filter
  *
  * @param {string} dirPath
- * @param {function(string,object)} filter filter function(dirPath, Dirent | Stats)
+ * @param {function(string,object)|RegExp} filter filter function(dirPath, Dirent | Stats)
  * @param {object} [options={}]
  */
 async function *walkFilterGenerator(dirPath,filter,options={}){
+	if(filter instanceof RegExp){
+		const regExp=filter;
+		filter=(dir,info)=>regExp.test(info.name);
+	}else if(typeof filter !== 'function'){
+		throw(new TypeError('wrong filter type'));
+	}
 	dirPath=Path.resolve(dirPath);
 	options=Object.assign({
 		depth:Infinity,//scan depth
@@ -138,17 +144,11 @@ async function generatorWrapper(gen,callback,options){
  *walk directory by filter
  *
  * @param {string} dirPath
- * @param {function(string,object)} filter filter function(dirPath, Dirent | Stats)
+ * @param {function(string,object)|RegExp} filter filter function(dirPath, Dirent | Stats)
  * @param {function} callback callback(subDir, Dirent | Stats)
  * @param {object} options
  */
 async function walkFilter(dirPath,filter,callback,options){
-	if(filter instanceof RegExp){
-		const regExp=filter;
-		filter=(dir,info)=>regExp.test(info.name);
-	}else if(typeof filter !== 'function'){
-		throw(new TypeError('wrong filter type'));
-	}
 	let gen=walkFilterGenerator(dirPath,filter,options);
 	await generatorWrapper(gen,callback,options);
 }

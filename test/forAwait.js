@@ -1,6 +1,6 @@
-const {walkRegExpGenerator}=require('../index.js');
+const {walkFilterGenerator}=require('../index.js');
 (async ()=>{
-	let gen=walkRegExpGenerator(__dirname+'/..',/.*/,{
+	let gen=walkFilterGenerator(__dirname+'/..',/.*/,{
 		depth:2,//scan depth
 		exclude:[],//exclude sub-path in posix format
 		asyncCallbackInParallel:false,//call async callback function in parallel (not wait them before the walker ends)

@@ -1,6 +1,6 @@
-const {walkRegExp}=require('../index.js');
+const {walkFilter}=require('../index.js');
 
-walkRegExp(__dirname+'/..',/.*/,(dir,info)=>{
+walkFilter(__dirname+'/..',/.*/,(dir,info)=>{
 	console.log(info.type,'\t',dir,info.name);
 },{
 	depth:Infinity,//scan depth
