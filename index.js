@@ -87,24 +87,12 @@ async function *walkFilterGenerator(dirPath,filter,options={}){
 				}
 				if(!hit)continue;
 			}
-			if(filter(info,currentDir)){
+			if(filter(currentDir,info)){
 				yield [currentDir,info];
 			}
 		}
 		toWalk=tmpDirs.concat(toWalk);
 	}
-}
-/**
- *async generator for walk directory by regExp
- *
- * @param {string} dirPath
- * @param {RegExp} regExp 
- * @param {object} [options={}]
- */
-function walkRegExpGenerator(dirPath,regExp,callback,options){
-	return walkFilterGenerator(dirPath,info=>{
-		return regExp.test(info.name);
-	},callback,options);
 }
 
 /**
@@ -113,21 +101,36 @@ function walkRegExpGenerator(dirPath,regExp,callback,options){
  * @param {Generator} gen
  * @param {function} callback callback(subDir, Dirent | Stats)
  * @param {object} options
+ * @param {boolean|number} options.asyncCallbackInParallel false to disable,number to set parallel tasks,true to run all tasks together
  */
 async function generatorWrapper(gen,callback,options){
 	options=Object.assign({
 		asyncCallbackInParallel:false,//call async callback function in parallel (not wait them before the walker ends)
 	},options);
-	if(options.asyncCallbackInParallel){
-		const callbackTasks=[];//callback tasks
-		for await(let [dir,info] of gen){
-			callbackTasks.push(callback(dir,info));
-		}
-		if(callbackTasks.length)await Promise.all(callbackTasks);
-	}else{
+	let inParallel=options.asyncCallbackInParallel;
+	if(inParallel===false||inParallel===undefined){
 		for await(let [dir,info] of gen){
 			await callback(dir,info);
 		}
+	}else if((typeof inParallel ==='number') || inParallel===true){
+		if(inParallel<=0)throw(new Error('wrong options.asyncCallbackInParallel: '+inParallel));
+		if(inParallel===true)inParallel=Infinity;
+		const callbackTasks=new Set;//callback tasks
+		for await(let [dir,info] of gen){
+			const p=callback(dir,info);
+			callbackTasks.add(p);
+			if(callbackTasks.size<inParallel){
+				continue;
+			}
+			await (Promise.race(callbackTasks)//continue when any task done or failed
+				.then(()=>{})
+				.catch((err)=>console.error(err))
+				.finally(()=>{
+					callbackTasks.delete(p);//delete current task's promise
+				}));
+		}
+		//consume the rest
+		if(callbackTasks.size)await Promise.allSettled(callbackTasks);
 	}
 }
 
@@ -140,26 +143,18 @@ async function generatorWrapper(gen,callback,options){
  * @param {object} options
  */
 async function walkFilter(dirPath,filter,callback,options){
+	if(filter instanceof RegExp){
+		const regExp=filter;
+		filter=(dir,info)=>regExp.test(info.name);
+	}else if(typeof filter !== 'function'){
+		throw(new TypeError('wrong filter type'));
+	}
 	let gen=walkFilterGenerator(dirPath,filter,options);
 	await generatorWrapper(gen,callback,options);
 }
 
-/**
- *walk directory by filter
- *
- * @param {string} dirPath
- * @param {RegExp} regExp 
- * @param {function} callback callback(subDir, Dirent | Stats)
- * @param {object} options
- */
-async function walkRegExp(dirPath,regExp,callback,options){
-	let gen=walkRegExpGenerator(dirPath,regExp,options);
-	await generatorWrapper(gen,callback,options);
-}
 
 module.exports={
 	walkFilterGenerator,
-	walkRegExpGenerator,
-	walkRegExp,
 	walkFilter,
 }
