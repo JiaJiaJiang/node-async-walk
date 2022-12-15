@@ -21,7 +21,7 @@ let walkOptions={//these are default values
     
     //call async callback function in parallel (not wait them before the walker ends)
     //not working in async generator mode
-    asyncCallbackInParallel:false,
+    asyncCallbackInParallel:false,//can be a number for max parallel tasks
     
     //file type filter
     types:['File','Directory','BlockDevice','CharacterDevice','FIFO','Socket','SymbolicLink'],
@@ -41,7 +41,7 @@ let walkOptions={//these are default values
   * name : File name.
   * type : Type of this file, the same as which in `walkOptions.types`.
 
-#### filter(info, subDir)
+#### filter(subDir, info)
 
 Parameters are the same as callback's.
 
@@ -51,61 +51,38 @@ Parameters are the same as callback's.
 
 There are two modes you can use: `callback mode` and `async generator mode`. With `async generator mode`, you can break at where you want in `for await`.
 
-#### Filter by RegExp
 
-------
-
-#### async function walkRegExp(path,regexp,callback[,options])
-
-```javascript
-const {walkRegExp}=require('async-walk-dir');
-
-walkRegExp(__dirname+'/..', /\.js$/, (dir,info)=>{//walk js files
-    console.log(info.type, '\t', dir, info.name);
-}, walkOptions);
-```
-
-#### async function* walkRegExpGenerator(path,regexp[,options])
-
-```javascript
-const {walkRegExpGenerator}=require('async-walk-dir');
-(async ()=>{
-    //get the generator
-    let gen=walkRegExpGenerator(__dirname+'/..', /.*/, {//options example
-        depth:2,//limit scan depth to 2
-        exclude:['.git'],//ignore '.git' directory and its children
-        types:['File','Directory'],
-        withStats:true,
-    });
-    
-    //use 'for await' for async generator and you can break at where you want
-    for await(let [dir,info] of gen){
-        console.log(info.type, '\t', dir, info.name);
-        if(info.name === 'poi')break;//break when find a file named 'poi'
-    }
-})();
-```
-
-
-
-#### Filter by filter function
-
-------
-
-#### async function walkFilter(path,filter,callback[,options])
+### async function walkFilter(path,filter,callback[,options])
 
 ```javascript
 const {walkFilter}=require('async-walk-dir');
-walkFilter(__dirname+'/..', info=>{//filter function
+walkFilter(__dirname+'/..', (subDir,info)=>{//filter function
     if(info.size > 2048)return true;//filter file whose size > 2048 Bytes
-}, (dir,info)=>{//callback
+}, (subDir, info)=>{//callback
     console.log(info.type, '\t', dir, info.name, info.size);
 }, {//options
     withStats:true,//use Stats object so we can get file size for filter
+	depth:2,//limit scan depth to 2
+	exclude:['.git'],//ignore '.git' directory and its children
+	types:['File','Directory'],
 });
+
+//The filter can be a REGEXP
+walkFilter(__dirname+'/..',
+	/.+\.js$/,//matcher
+	(subDir, info)=>{//callback
+		console.log(info.type, '\t', dir, info.name, info.size);
+	}, 
+	{//options
+		withStats:true,//use Stats object so we can get file size for filter
+		depth:2,//limit scan depth to 2
+		exclude:['.git'],//ignore '.git' directory and its children
+		types:['File','Directory'],
+	}
+);
 ```
 
-#### async function* walkFilterGenerator(path,filter[,options])
+### async function* walkFilterGenerator(path,filter[,options])
 
 ```javascript
 const {walkRegExpGenerator}=require('async-walk-dir');
@@ -120,6 +97,7 @@ const {walkRegExpGenerator}=require('async-walk-dir');
     //use 'for await' for async generator and you can break at where you want
     for await(let [dir,info] of gen){
         console.log(info.type,'\t', dir, info.name);
+        if(info.name === 'poi')break;//break when find a file named 'poi'
     }
 })();
 ```
@@ -146,6 +124,6 @@ walkFilter(__dirname+'/..', info=>{
     })
 },{
     withStats:true,//use Stats object so we can get file size for filter
-    asyncCallbackInParallel:true,
+    asyncCallbackInParallel:4,//run 4 tasks at the same time
 });
 ```
