@@ -124,16 +124,15 @@ async function generatorWrapper(gen,callback,options){
 		const callbackTasks=new Set;//callback tasks
 		for await(let [dir,info] of gen){
 			const p=callback(dir,info);
+			p.catch((err)=>console.error(err))
+			.finally(()=>{
+				callbackTasks.delete(p);//delete current task's promise
+			});
 			callbackTasks.add(p);
 			if(callbackTasks.size<inParallel){
 				continue;
 			}
-			await (Promise.race(callbackTasks)//continue when any task done or failed
-				.then(()=>{})
-				.catch((err)=>console.error(err))
-				.finally(()=>{
-					callbackTasks.delete(p);//delete current task's promise
-				}));
+			await Promise.race(callbackTasks);//continue when any task done or failed
 		}
 		//consume the rest
 		if(callbackTasks.size)await Promise.allSettled(callbackTasks);
