@@ -59,7 +59,7 @@ const {walkFilter}=require('async-walk-dir');
 walkFilter(__dirname+'/..', (subDir,info)=>{//filter function
     if(info.size > 2048)return true;//filter file whose size > 2048 Bytes
 }, (subDir, info)=>{//callback
-    console.log(info.type, '\t', dir, info.name, info.size);
+    console.log(info.type, '\t', subDir, info.name, info.size);
 }, {//options
     withStats:true,//use Stats object so we can get file size for filter
 	depth:2,//limit scan depth to 2
@@ -71,7 +71,7 @@ walkFilter(__dirname+'/..', (subDir,info)=>{//filter function
 walkFilter(__dirname+'/..',
 	/.+\.js$/,//matcher
 	(subDir, info)=>{//callback
-		console.log(info.type, '\t', dir, info.name, info.size);
+		console.log(info.type, '\t', subDir, info.name, info.size);
 	}, 
 	{//options
 		withStats:true,//use Stats object so we can get file size for filter
@@ -95,8 +95,8 @@ const {walkFilterGenerator}=require('async-walk-dir');
     });
     
     //use 'for await' for async generator and you can break at where you want
-    for await(let [dir,info] of gen){
-        console.log(info.type,'\t', dir, info.name);
+    for await(let [subDir,info] of gen){
+        console.log(info.type,'\t', subDir, info.name);
         if(info.name === 'poi')break;//break when find a file named 'poi'
     }
 })();
@@ -115,10 +115,10 @@ const {walkFilter}=require('async-walk-dir');
 
 walkFilter(__dirname+'/..', info=>{
     if(info.size > 2048)return true;//get file which size > 2048 Bytes
-},async (dir,info)=>{
+},async (subDir,info)=>{
     return new Promise((ok,fail)=>{
         setTimeout(()=>{//set a random timout,in parallel mode the log will print in random order
-            console.log(info.type, '\t', dir, info.name, info.size);
+            console.log(info.type, '\t', subDir, info.name, info.size);
             ok();
         },5000*Math.random());
     })
