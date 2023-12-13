@@ -85,7 +85,7 @@ walkFilter(__dirname+'/..',
 ### async function* walkFilterGenerator(path,filter[,options])
 
 ```javascript
-const {walkRegExpGenerator}=require('async-walk-dir');
+const {walkFilterGenerator}=require('async-walk-dir');
 (async ()=>{
     //get the generator
     let gen=walkFilterGenerator(__dirname+'/..', info=>{//filter function
